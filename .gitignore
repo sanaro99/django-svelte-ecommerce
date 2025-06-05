@@ -1,0 +1,40 @@
+# Root
+.env
+docker-compose.override.yml
+
+# Python (backend)
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+db.sqlite3
+*.sqlite3
+.pytest_cache/
+.mypy_cache/
+.env
+migrations/
+
+# Django static/media (untracked dev files)
+staticfiles/
+media/
+.coverage
+
+# Node/SvelteKit (frontend)
+node_modules/
+.svelte-kit/
+.env
+
+# System/Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log
+
+# Vercel/Deployment artifacts (optional)
+.vercel/
+.output/

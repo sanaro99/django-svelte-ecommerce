@@ -33,11 +33,13 @@ ALLOWED_HOSTS = [
     "localhost",  # For local dev
     "127.0.0.1",  # For direct IP access
     "0.0.0.0",    # If using Docker
-    ]
+]
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +55,8 @@ INSTALLED_APPS += [
     "drf_spectacular",
     "catalog",
     "sales",
+    "accounts",
+    "corsheaders",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -91,17 +95,25 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for E-commerce platform",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
-    'OAUTH2_FLOWS': ['password'],
-    'OAUTH2_AUTHORIZATION_URL': "http://localhost:8000/o/authorize/",
-    'OAUTH2_TOKEN_URL': "http://localhost:8000/o/token/",
+    'OAUTH2_FLOWS': ['authorizationCode'],
+    'OAUTH2_AUTHORIZATION_URL': "/o/authorize/",
+    'OAUTH2_TOKEN_URL': "/o/token/",
+    'OAUTH2_REFRESH_URL': None,
+    'OAUTH2_SCOPES': {
+        "read:products": "Read products",
+        "write:products": "Edit products",
+        "read:orders": "Read orders",
+        "write:orders": "Edit orders",
+    },
     "SWAGGER_UI_OAUTH2_CONFIG": {
         "clientId": "YX5Fe4GJOo5mA6WCQlV1Ir6cDFOo8EBp6q1xBnjB",
-        "clientSecret": "Wo4Pi7kFjd3hRGkfXIx7aN9R3fT5HdQfLw9GPWg1sYU66Q6niVyvTuXX8XpzZEiI6FnZvEFH0AQ58dFQkrjkwZtdtXECM4ZOrgABB8BuUaTEnQ9ae7I4ssOpoI0dtiY1",
+        "usePkceWithAuthorizationCodeGrant": True,
     },
-    'SWAGGER_UI_SETTINGS': {
-        'deepLinking': True,
-        'withCredentials': True,
-        'persistAuthorization': True
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "withCredentials": True,
+        "persistAuthorization": True,
+        "oauth2RedirectUrl": "http://localhost:8000/oauth2-redirect.html"
     },
 }
 
@@ -117,6 +129,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'ecomm.urls'

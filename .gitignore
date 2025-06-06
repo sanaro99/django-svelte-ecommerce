@@ -25,6 +25,7 @@ media/
 node_modules/
 .svelte-kit/
 .env
+package-lock.json
 
 # System/Editor files
 .DS_Store

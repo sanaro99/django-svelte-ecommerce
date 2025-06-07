@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { BACKEND_BASE_URL } from '$lib/api';
+  import { FRONTEND_BASE_URL } from '$lib/api';
   import pkceChallenge from "pkce-challenge";
 
   let error = "";
@@ -20,14 +22,14 @@
     const params = new URLSearchParams({
       client_id: import.meta.env.VITE_CLIENT_ID,
       response_type: "code",
-      redirect_uri: "http://localhost:5173/auth/callback", // must match Django app config
+      redirect_uri: `${FRONTEND_BASE_URL}/auth/callback`, // must match Django app config
       scope: "read:products write:products read:orders write:orders",
       code_challenge: code_challenge,
       code_challenge_method: "S256"
     });
 
     // 4. Redirect to Django OAuth2 authorize
-    window.location.href = `http://localhost:8000/o/authorize/?${params.toString()}`;
+    window.location.href = `${BACKEND_BASE_URL}/o/authorize/?${params.toString()}`;
   }
 </script>
 

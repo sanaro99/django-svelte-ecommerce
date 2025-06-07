@@ -29,15 +29,15 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Host validation
 ALLOWED_HOSTS = [
-    "localhost",  # For local dev
-    "127.0.0.1",  # For direct IP access
-    "0.0.0.0",    # If using Docker
+    "localhost",
+    "127.0.0.1",
+    os.getenv("BACKEND_PROD_URL"),  # backend
 ]
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -59,10 +59,18 @@ INSTALLED_APPS += [
     "corsheaders",
 ]
 
+# CORS setup
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # default Svelte dev server
-    "http://localhost:8000",  # default Django dev server
+    "http://localhost:5173",  # local frontend dev
+    os.getenv("FRONTEND_PROD_URL"),  # frontend
 ]
+
+# CSRF setup (only required if your frontend is using cookies for auth)
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    os.getenv("FRONTEND_PROD_URL"),
+]
+
 CORS_ALLOW_CREDENTIALS = False
 
 REST_FRAMEWORK = {
@@ -108,14 +116,14 @@ SPECTACULAR_SETTINGS = {
         "write:orders": "Edit orders",
     },
     "SWAGGER_UI_OAUTH2_CONFIG": {
-        "clientId": "YX5Fe4GJOo5mA6WCQlV1Ir6cDFOo8EBp6q1xBnjB",
+        "clientId": os.getenv("CLIENT_ID"),
         "usePkceWithAuthorizationCodeGrant": True,
     },
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "withCredentials": True,
         "persistAuthorization": True,
-        "oauth2RedirectUrl": "http://localhost:8000/docs/oauth2-redirect.html"
+        "oauth2RedirectUrl": os.getenv("BACKEND_PROD_URL") + "/docs/oauth2-redirect.html"
     },
 }
 

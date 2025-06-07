@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BACKEND_BASE_URL } from '$lib/api';
   let username = '';
   let email = '';
   let password = '';
@@ -22,7 +23,7 @@
     let data: any;
 
     try {
-      res = await fetch('http://localhost:8000/accounts/register/', {
+      res = await fetch(`${BACKEND_BASE_URL}/accounts/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),

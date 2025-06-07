@@ -2,6 +2,8 @@
   import '../app.css';
   import { onMount } from 'svelte';
   import { fetchCurrentUser, logout } from '$lib/api';
+  import { BACKEND_BASE_URL } from '$lib/api';
+  import { FRONTEND_BASE_URL } from '$lib/api';
   let user: any = null;
   let userLoading = true;
   let dropdownOpen = false;
@@ -13,7 +15,7 @@
   function handleLogout() {
     // Clear local tokens and redirect to backend logout to clear session
     logout();
-    window.location.href = 'http://localhost:8000/accounts/logout/?next=http://localhost:5173/login';
+    window.location.href = `${BACKEND_BASE_URL}/accounts/logout/?next=${FRONTEND_BASE_URL}/login`;
   }
 </script>
 

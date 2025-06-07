@@ -60,7 +60,10 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     lookup_field = "slug"
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["category", "price"]  # filter by exact category or price
+    filterset_fields = {
+        'category': ['exact'],
+        'stock': ['gte'],
+    }
     search_fields = ["name", "description"]   # search by these fields
     ordering_fields = ["price", "created_at"] # allow ordering
 

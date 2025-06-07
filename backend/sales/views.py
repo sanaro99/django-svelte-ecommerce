@@ -7,6 +7,8 @@ from rest_framework.authentication import SessionAuthentication
 from .models import Customer, Order, OrderItem, Cart, CartItem
 from .serializers import CustomerSerializer, OrderSerializer, OrderItemSerializer, CartSerializer
 from catalog.models import Product
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 class CustomerViewSet(ModelViewSet):
     permission_classes = [TokenHasReadWriteScope]
@@ -18,13 +20,16 @@ class CustomerViewSet(ModelViewSet):
 class OrderViewSet(ModelViewSet):
     authentication_classes = [OAuth2Authentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
-    queryset = Order.objects.select_related("customer").prefetch_related("items__product").all()
+    queryset = Order.objects.select_related("customer").prefetch_related("items__product").all().order_by('-created_at')
     serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = {'status': ['exact'], 'created_at': ['gte']}
+    ordering_fields = ['created_at']
 
     def get_queryset(self):
         # Only return orders for the logged-in user
         user = self.request.user
-        return Order.objects.select_related("customer").prefetch_related("items__product").filter(customer__user=user)
+        return Order.objects.select_related("customer").prefetch_related("items__product").filter(customer__user=user).order_by('-created_at')
 
 class OrderItemViewSet(ModelViewSet):
     permission_classes = [TokenHasReadWriteScope]

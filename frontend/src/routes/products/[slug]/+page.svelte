@@ -65,10 +65,10 @@
   {:else if error}
     <p class="text-red-600">Error: {error}</p>
   {:else}
-    <div class="max-w-2xl w-full bg-white shadow rounded-lg p-6">
+    <div class="max-w-2xl w-full bg-white shadow rounded-3xl p-6">
       {#if product.images?.length}
         <div class="relative mb-4">
-          <img src={product.images[currentIndex].url} alt={product.name} class="w-full h-64 object-cover rounded-lg" />
+          <img src={product.images[currentIndex].url} alt={product.name} class="w-full h-64 object-cover rounded-3xl" />
           <button on:click={prevImage} class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full">&#10094;</button>
           <button on:click={nextImage} class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-2 rounded-full">&#10095;</button>
         </div>

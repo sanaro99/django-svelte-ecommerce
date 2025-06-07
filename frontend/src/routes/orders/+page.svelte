@@ -5,21 +5,50 @@
   let orders: any[] = [];
   let loading = true;
   let error = '';
+  let statusFilter = '';
+  let monthsFilter = 0;
+  const statuses = ['pending','paid','shipped','completed','cancelled'];
 
-  onMount(async () => {
+  function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  async function loadOrders() {
+    loading = true;
+    error = '';
+    let createdAfter: string | undefined;
+    if (monthsFilter > 0) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - monthsFilter);
+      createdAfter = d.toISOString();
+    }
     try {
-      const data = await fetchOrders();
-      orders = data;
+      orders = await fetchOrders(undefined, statusFilter || undefined, createdAfter);
     } catch (e: any) {
       error = e.message;
-    } finally {
-      loading = false;
     }
-  });
+    loading = false;
+  }
+
+  onMount(loadOrders);
 </script>
 
 <div class="p-6 max-w-4xl mx-auto">
   <h2 class="text-2xl font-bold mb-4">Your Orders</h2>
+  <!-- Filters -->
+  <div class="flex flex-wrap gap-4 mb-4">
+    <select bind:value={statusFilter} on:change={loadOrders} class="px-3 py-2 border rounded-3xl pr-10">
+      <option value=''>All Statuses</option>
+      {#each statuses as s}
+        <option value={s}>{capitalize(s)}</option>
+      {/each}
+    </select>
+    <label class="inline-flex items-center">
+      <span class="mr-2">Last</span>
+      <input type="number" min="0" bind:value={monthsFilter} on:change={loadOrders} class="w-16 px-2 py-1 border rounded-3xl" />
+      <span class="ml-2">months</span>
+    </label>
+  </div>
   {#if loading}
     <p>Loading orders...</p>
   {:else}
@@ -30,7 +59,7 @@
     {:else}
       <div class="space-y-6">
         {#each orders as order}
-          <div class="bg-white shadow p-4 rounded-lg">
+          <div class="bg-white shadow p-4 rounded-3xl">
             <div class="flex justify-between items-center mb-2">
               <span class="font-semibold">Order #{order.id}</span>
               <span class="text-sm text-gray-500">{new Date(order.created_at).toLocaleString()}</span>

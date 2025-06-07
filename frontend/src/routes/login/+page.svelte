@@ -39,10 +39,10 @@
   </div>
 
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-3xl sm:px-10">
       <form class="space-y-6" on:submit|preventDefault={handleLogin}>
         <div>
-          <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-3xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Login with your account (OAuth2)
           </button>
         </div>
@@ -50,7 +50,7 @@
 
       {#if error}
         <div class="mt-6">
-          <div class="rounded-md bg-red-50 p-4">
+          <div class="rounded-3xl bg-red-50 p-4">
             <div class="flex">
               <div class="flex-shrink-0">
                 <!-- Heroicon name: solid/x-circle -->

@@ -1,12 +1,14 @@
 const BASE_URL = 'http://localhost:8000';
 const API_BASE = `${BASE_URL}/api`;
 
-export async function fetchProducts(page: number = 1, token?: string) {
-  // Paginated fetch: default to page 1
-  const res = await fetch(`${API_BASE}/products/?page=${page}`, {
+export async function fetchProducts(page: number = 1, category?: number, inStockOnly: boolean = false, token?: string) {
+  let url = `${API_BASE}/products/?page=${page}`;
+  if (category) url += `&category=${category}`;
+  if (inStockOnly) url += `&stock__gte=1`;
+  const res = await fetch(url, {
     headers: getAuthHeaders(token),
   });
-  if (!res.ok) throw new Error('Failed to fetch products');
+  if (!res.ok) throw new Error(`Failed to fetch products (${res.status})`);
   return res.json();
 }
 
@@ -33,8 +35,9 @@ export async function fetchCategories(token?: string) {
   const res = await fetch(`${API_BASE}/categories/`, {
     headers: getAuthHeaders(token),
   });
-  if (!res.ok) throw new Error('Failed to fetch categories');
-  return res.json();
+  if (!res.ok) throw new Error(`Failed to fetch categories (${res.status})`);
+  const data = await res.json();
+  return data.results ?? data;
 }
 
 // Fetch products by category id or slug (as needed)
@@ -127,15 +130,20 @@ export async function checkoutCart(token?: string) {
 }
 
 // Fetch current user's orders
-export async function fetchOrders(token?: string) {
-  const res = await fetch(`${API_BASE}/orders/`, {
+export async function fetchOrders(token?: string, status?: string, createdAfter?: string) {
+  let url = `${API_BASE}/orders/`;
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+  if (createdAfter) params.append('created_at__gte', createdAfter);
+  const query = params.toString();
+  const res = await fetch(query ? `${url}?${query}` : url, {
     headers: getAuthHeaders(token),
   });
-  let data: any;
-  try { data = await res.json(); } catch { data = null; }
   if (!res.ok) {
-    throw new Error(data?.error || data?.detail || `Failed to fetch orders (${res.status})`);
+    const data = await res.json().catch(() => ({}));
+    const msg = data?.error || data?.detail || `Failed to fetch orders (${res.status})`;
+    throw new Error(msg);
   }
-  // Handle pagination if present
+  const data = await res.json();
   return data.results ?? data;
 }

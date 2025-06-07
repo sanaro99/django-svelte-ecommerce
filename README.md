@@ -6,6 +6,17 @@ A production-ready, modern e-commerce platform built with:
 * **SvelteKit** (frontend, SEO friendly, Vercel-ready)
 * **PostgreSQL** (Supabase)
 
+## Live Demo
+
+Frontend: [https://django-svelte-ecommerce.vercel.app](https://django-svelte-ecommerce.vercel.app)
+
+Backend: [https://django-svelte-ecommerce-production.up.railway.app](https://django-svelte-ecommerce-production.up.railway.app)
+
+Test user credentials:
+Please reach out to me for test user credentials or create your own by using the [registration form](https://django-svelte-ecommerce.vercel.app/register) on the frontend.
+
+<u>*Disclaimer:*</u> This live demo is running on free-tier infrastructure across multiple global regions and providers. As a result, response times may vary and performance is not guaranteed. This environment is intended for testing and evaluation purposes only and *should not be used for production workloads.*
+
 ## Monorepo Structure
 
 ```

@@ -23,9 +23,9 @@ Check the setup steps [here](../README.md#backend-setup)
 ## Production Deployment (Railway)
 
 Check the deployment steps [here](../README.md#backend-railway)
----
 
-**Directory structure:**
+
+## Directory structure:
 
 ```
 catalog/      # Product & category models, API for products, categories

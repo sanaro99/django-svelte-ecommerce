@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:8000/api';
+const BASE_URL = 'http://localhost:8000';
+const API_BASE = `${BASE_URL}/api`;
 
 export async function fetchProducts(page: number = 1, token?: string) {
   // Paginated fetch: default to page 1
@@ -47,7 +48,7 @@ export async function fetchProductsByCategory(categoryId: number, token?: string
 
 // Fetch current authenticated user details
 export async function fetchCurrentUser(token?: string) {
-  const res = await fetch(`http://localhost:8000/accounts/user/`, {
+  const res = await fetch(`${BASE_URL}/accounts/user/`, {
     headers: getAuthHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to fetch user details');
@@ -105,4 +106,36 @@ export async function removeFromCart(itemId: number, token?: string) {
     throw new Error(msg);
   }
   return data;
+}
+
+// Checkout cart
+export async function checkoutCart(token?: string) {
+  const res = await fetch(`${API_BASE}/cart/checkout/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(token),
+    },
+  });
+  let data: any;
+  try { data = await res.json(); } catch { data = null; }
+  if (!res.ok) {
+    const msg = data?.error || data?.detail || `Failed to checkout cart (${res.status})`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+// Fetch current user's orders
+export async function fetchOrders(token?: string) {
+  const res = await fetch(`${API_BASE}/orders/`, {
+    headers: getAuthHeaders(token),
+  });
+  let data: any;
+  try { data = await res.json(); } catch { data = null; }
+  if (!res.ok) {
+    throw new Error(data?.error || data?.detail || `Failed to fetch orders (${res.status})`);
+  }
+  // Handle pagination if present
+  return data.results ?? data;
 }

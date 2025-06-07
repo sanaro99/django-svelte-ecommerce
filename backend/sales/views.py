@@ -1,8 +1,9 @@
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication
 from .models import Customer, Order, OrderItem, Cart, CartItem
 from .serializers import CustomerSerializer, OrderSerializer, OrderItemSerializer, CartSerializer
 from catalog.models import Product
@@ -15,11 +16,15 @@ class CustomerViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
 
 class OrderViewSet(ModelViewSet):
-    permission_classes = [TokenHasReadWriteScope]
-    required_scopes_for_read = ['read:orders']
-    required_scopes_for_write = ['write:orders']
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Order.objects.select_related("customer").prefetch_related("items__product").all()
     serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        # Only return orders for the logged-in user
+        user = self.request.user
+        return Order.objects.select_related("customer").prefetch_related("items__product").filter(customer__user=user)
 
 class OrderItemViewSet(ModelViewSet):
     permission_classes = [TokenHasReadWriteScope]
@@ -30,6 +35,7 @@ class OrderItemViewSet(ModelViewSet):
 
 class CartViewSet(ViewSet):
     """ViewSet for user cart: list, add items, remove items"""
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
@@ -66,3 +72,16 @@ class CartViewSet(ViewSet):
         except CartItem.DoesNotExist:
             return Response({'error': 'Invalid item_id'}, status=400)
         return Response(CartSerializer(cart).data)
+
+    @action(detail=False, methods=['post'])
+    def checkout(self, request):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        if not cart.items.exists():
+            return Response({'error': 'Cart is empty'}, status=400)
+        customer = request.user.customer
+        order = Order.objects.create(customer=customer, status='pending')
+        for item in cart.items.all():
+            OrderItem.objects.create(order=order, product=item.product, qty=item.qty, price=item.price)
+        cart.items.all().delete()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)

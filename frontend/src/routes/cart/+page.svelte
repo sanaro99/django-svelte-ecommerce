@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchCart, removeFromCart, addToCart } from '$lib/api';
+  import { fetchCart, removeFromCart, addToCart, checkoutCart } from '$lib/api';
 
   let cart: { items: any[]; total_amount: number } = { items: [], total_amount: 0 };
   let loading = true;
   let error = '';
+  let successMessage = '';
   let qtyMap: Record<number, number> = {};
 
   onMount(async () => {
@@ -17,6 +18,19 @@
       loading = false;
     }
   });
+
+  async function checkout() {
+    error = '';
+    loading = true;
+    try {
+      const order = await checkoutCart();
+      successMessage = `Order #${order.id} placed successfully!`;
+    } catch (e: any) {
+      error = e.message;
+    } finally {
+      loading = false;
+    }
+  }
 
   async function handleRemove(itemId: number) {
     error = '';
@@ -66,8 +80,11 @@
       {#if error}
         <p class="text-red-600 mb-4">{error}</p>
       {/if}
+      {#if successMessage}
+        <p class="text-green-600 mb-4">{successMessage} <a href="/orders" class="text-indigo-600 hover:underline">View Orders</a></p>
+      {/if}
       {#if cart.items.length === 0}
-        <p>Your cart is empty.</p>
+        <p>Your cart is empty. <a href="/" class="text-indigo-600 hover:underline">Start shopping</a>.</p>
       {:else}
         <table class="min-w-full divide-y divide-gray-200">
           <thead>
@@ -101,6 +118,9 @@
         <div class="mt-4 text-right">
           <p class="text-lg font-semibold text-gray-900">Total: ${cart.total_amount}</p>
         </div>
+        <button on:click={checkout}
+          class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Checkout
+        </button>
       {/if}
     {/if}
   </div>

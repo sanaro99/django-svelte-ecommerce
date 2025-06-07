@@ -28,6 +28,7 @@
       {:else if user}
         <a href="/" class="px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-indigo-600">Products</a>
         <a href="/cart" class="px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-indigo-600">Cart</a>
+        <a href="/orders" class="px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-indigo-600">Orders</a>
         <div class="relative">
           <button on:click={() => dropdownOpen = !dropdownOpen}
             class="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-indigo-600">

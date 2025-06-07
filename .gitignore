@@ -21,6 +21,7 @@ migrations/
 
 # Django static/media (untracked dev files)
 staticfiles/
+static/
 media/
 .coverage
 

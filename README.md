@@ -2,9 +2,9 @@
 
 A production-ready, modern e-commerce platform built with:
 
-* **Django + Django REST Framework** (API backend, OAuth2, PostgreSQL)
-* **SvelteKit** (frontend, SSR, SEO, Vercel-ready)
-* **Docker Compose** (for orchestration and local dev)
+* **Django + Django REST Framework** (backend, API, OAuth2, Railway-ready)
+* **SvelteKit** (frontend, SEO friendly, Vercel-ready)
+* **PostgreSQL** (Supabase)
 
 ## Monorepo Structure
 
@@ -12,7 +12,6 @@ A production-ready, modern e-commerce platform built with:
 .
 ├── backend/      # Django project & API backend
 ├── frontend/     # SvelteKit app (SSR frontend)
-├── docker-compose.yml
 ```
 
 ## Local Development
@@ -21,21 +20,35 @@ A production-ready, modern e-commerce platform built with:
 
 * Python 3.10+
 * Node.js 18+
-* Docker & Docker Compose (for DB/containers)
+* Supabase account
 
-### Backend
+### Backend setup
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env       # Edit as needed
+cp .env.example .env       # Edit .env file as needed
+python manage.py createsuperuser
+python manage.py makemigrations
 python manage.py migrate
+python manage.py seed_data # To seed sample data using Faker library # Optional
+```
+Open /o/applications/ and add an application. Copy the client id and client secret and replace it in .env file.
+client type: ```public``` \
+Authorization grant type: ```authorization code``` \
+Redirect URI list: 
+```
+<your-backend-url>/oauth2-redirect.html
+<your-frontend-url>/auth/callback
+```
+Finally, run the server:
+```
 python manage.py runserver
 ```
 
-### Frontend
+### Frontend setup
 
 ```bash
 cd frontend
@@ -43,15 +56,35 @@ npm install
 npm run dev
 ```
 
-### With Docker Compose
-
-```bash
-docker-compose up --build
-```
 
 ## Deployment
 
-* Backend: Deploy Django to your preferred host (supports Gunicorn/Uvicorn, Postgres)
-* Frontend: Deploy SvelteKit via Vercel (recommended) or any Node host
+### Backend (Railway)
+- Connect your GitHub repo to Railway.
+- Choose root directory as `backend`.
+- In Railway environment variables, set as per [backend/.env.example](./backend/.env.example):
+  - DJANGO_SECRET_KEY
+  - DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT (Supabase Postgres)
+  - CLIENT_ID, CLIENT_SECRET
+  - BACKEND_PROD_URL, FRONTEND_PROD_URL
+- In Railway Start Command:
+  ```
+  gunicorn ecomm.wsgi:application
+  ```
+
+### Frontend (Vercel)
+- Connect your repo to Vercel.
+- Choose root directory as `frontend`.
+- In Vercel environment variables, set as per [frontend/.env.example](./frontend/.env.example):
+  - VITE_BACKEND_BASE_URL
+  - VITE_CLIENT_ID
+  - VITE_FRONTEND_BASE_URL
+- Build command: `npm run build` # This is the default build command
+- Output directory: `build` # This is the default output director
+
+### Database (Supabase)
+- Use Supabase Postgres in production.
+- Provide DB credentials via Railway environment variables above.
+- Use the shared pooler connection variables if you're connecting using Railway/Render
 
 ---

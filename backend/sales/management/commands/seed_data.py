@@ -48,6 +48,10 @@ class Command(BaseCommand):
             )
             categories.append(cat)
 
+        # Create test users
+        User.objects.create_superuser(username='testadmin', email='testadmin@example.com', password='testpassword')
+        User.objects.create_superuser(username='testcustomer', email='testcustomer@example.com', password='testpassword')
+
         # Create Products
         products = []
         for _ in range(500):

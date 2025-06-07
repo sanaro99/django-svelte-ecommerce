@@ -9,6 +9,8 @@
   let slug = '';
   let currentIndex: number = 0;
   let qty: number = 1;
+  let errorMessage = '';
+  let adding = false;
 
   // Subscribe to the page store to get the slug
   $: slug = $page.params.slug;
@@ -36,8 +38,24 @@
   }
 
   async function handleAddToCart() {
-    await addToCart(product.id, qty);
-    window.location.href = '/cart';
+    errorMessage = '';
+    if (qty < 1) {
+      errorMessage = 'Quantity must be at least 1';
+      return;
+    }
+    if (qty > product.stock) {
+      errorMessage = `Only ${product.stock} items in stock`;
+      return;
+    }
+    adding = true;
+    try {
+      await addToCart(product.id, qty);
+      window.location.href = '/cart';
+    } catch (e: any) {
+      errorMessage = e.message;
+    } finally {
+      adding = false;
+    }
   }
 </script>
 
@@ -57,8 +75,13 @@
       {/if}
       <div class="mt-4 flex items-center space-x-2">
         <input type="number" bind:value={qty} min="1" max={product.stock} class="w-20 border p-1 rounded" />
-        <button on:click={handleAddToCart} class="px-4 py-2 bg-indigo-600 text-white rounded">Add to Cart</button>
+        <button on:click={handleAddToCart} class="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50" disabled={adding || product.stock === 0}>
+          {#if adding}Adding...{:else}Add to Cart{/if}
+        </button>
       </div>
+      {#if errorMessage}
+        <p class="text-red-600 mt-2">{errorMessage}</p>
+      {/if}
       <h1 class="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
       <p class="text-gray-700 mb-2">{product.description}</p>
       <p class="text-xl font-semibold text-indigo-600">Price: ${product.price}</p>

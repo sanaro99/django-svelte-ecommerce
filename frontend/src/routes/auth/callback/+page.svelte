@@ -1,8 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  let errorMessage = '';
 
   onMount(async () => {
     const urlParams = new URLSearchParams(window.location.search);
+    const err = urlParams.get('error');
+    if (err) {
+      errorMessage = err.replace(/_/g, ' ');
+      return;
+    }
     const code = urlParams.get('code');
     const code_verifier = sessionStorage.getItem('pkce_code_verifier');
 
@@ -31,8 +37,20 @@
         // Handle error
         console.error(await res.text());
       }
+    } else {
+      // No code/verifier; do nothing
     }
   });
 </script>
 
-<p>Authorizing…</p>
+{#if errorMessage}
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div class="bg-white p-6 rounded-md shadow-md text-center">
+      <h2 class="text-xl font-semibold text-red-600 mb-2">Authorization Error</h2>
+      <p class="text-gray-700">{errorMessage}</p>
+      <a href="/" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Go Home</a>
+    </div>
+  </div>
+{:else}
+  <p class="min-h-screen flex items-center justify-center text-gray-600">Authorizing…</p>
+{/if}

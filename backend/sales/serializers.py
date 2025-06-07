@@ -1,12 +1,27 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from .models import Customer, Order, OrderItem, Cart, CartItem
 from catalog.serializers import ProductSerializer
 from catalog.models import Product
 
+User = get_user_model()
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+
 class CustomerSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), source='user', write_only=True
+    )
     class Meta:
         model = Customer
-        fields = "__all__"
+        fields = [
+            'id', 'user', 'user_id', 'phone', 'street_address', 'city',
+            'state', 'postal_code', 'country', 'created_at'
+        ]
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)

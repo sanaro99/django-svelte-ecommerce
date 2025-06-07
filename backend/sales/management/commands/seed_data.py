@@ -1,11 +1,13 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
 from catalog.models import Category, Product, ProductSpecification, ProductImage
+from django.contrib.auth import get_user_model
 from sales.models import Customer, Order, OrderItem, Cart, CartItem
 from random import randint, uniform, choice, sample
 from django.utils.text import slugify
 
 fake = Faker()
+User = get_user_model()
 
 # Realistic specification keys
 SPEC_NAMES = [
@@ -33,6 +35,8 @@ class Command(BaseCommand):
         # Clear cart data
         CartItem.objects.all().delete()
         Cart.objects.all().delete()
+        # Clear old auth users
+        User.objects.all().delete()
 
         # Create Categories
         categories = []
@@ -68,16 +72,36 @@ class Command(BaseCommand):
             for _ in range(3):
                 ProductImage.objects.create(product=product, url=random_image_url())
 
-        # Create Customers
+        # Create Users and associated Customers
         customers = []
         for _ in range(25):
-            customer = Customer.objects.create(
-                email=fake.unique.email(),
-                first_name=fake.first_name(),
-                last_name=fake.last_name(),
-                phone=fake.phone_number()[:20],
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            email = fake.unique.email()
+            username = slugify(email.split('@')[0]) + str(randint(100, 999))
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password='password',
+                first_name=first_name,
+                last_name=last_name,
             )
+            # Populate customer profile
+            customer = Customer.objects.get(user=user)
+            customer.phone = fake.phone_number()[:20]
+            customer.street_address = fake.street_address()
+            customer.city = fake.city()
+            customer.state = fake.state()
+            customer.postal_code = fake.postcode()
+            customer.country = fake.country()
+            customer.save()
             customers.append(customer)
+        # Promote random customers to admin
+        for cust in sample(customers, 5):
+            u = cust.user
+            u.is_staff = True
+            u.is_superuser = True
+            u.save()
 
         # Create Orders and OrderItems
         status_choices = ["pending", "paid", "shipped", "completed", "cancelled"]

@@ -79,8 +79,13 @@ export async function addToCart(productId: number, qty: number = 1, token?: stri
     },
     body: JSON.stringify({ product_id: productId, qty }),
   });
-  if (!res.ok) throw new Error('Failed to add to cart');
-  return res.json();
+  let data: any;
+  try { data = await res.json(); } catch { data = null; }
+  if (!res.ok) {
+    const msg = data?.error || data?.detail || `Failed to add to cart (${res.status})`;
+    throw new Error(msg);
+  }
+  return data;
 }
 
 // Remove item from cart
@@ -93,6 +98,11 @@ export async function removeFromCart(itemId: number, token?: string) {
     },
     body: JSON.stringify({ item_id: itemId }),
   });
-  if (!res.ok) throw new Error('Failed to remove from cart');
-  return res.json();
+  let data: any;
+  try { data = await res.json(); } catch { data = null; }
+  if (!res.ok) {
+    const msg = data?.error || data?.detail || `Failed to remove from cart (${res.status})`;
+    throw new Error(msg);
+  }
+  return data;
 }

@@ -19,6 +19,7 @@
   });
 
   async function handleRemove(itemId: number) {
+    error = '';
     loading = true;
     try {
       cart = await removeFromCart(itemId);
@@ -32,9 +33,21 @@
 
   async function handleQtyChange(itemId: number) {
     const newQty = qtyMap[itemId];
+    error = '';
+    const item = cart.items.find(i => i.id === itemId);
+    if (!item) return;
+    if (newQty < 1) {
+      error = 'Quantity must be at least 1';
+      qtyMap[itemId] = item.qty;
+      return;
+    }
+    if (newQty > item.product.stock) {
+      error = `Only ${item.product.stock} items in stock`;
+      qtyMap[itemId] = item.qty;
+      return;
+    }
     loading = true;
     try {
-      const item = cart.items.find(i => i.id === itemId);
       cart = await addToCart(item.product.id, newQty);
     } catch (e: any) {
       error = e.message;
@@ -49,9 +62,10 @@
     <h2 class="text-2xl font-bold mb-4">Your Cart</h2>
     {#if loading}
       <p>Loading cart...</p>
-    {:else if error}
-      <p class="text-red-600">{error}</p>
     {:else}
+      {#if error}
+        <p class="text-red-600 mb-4">{error}</p>
+      {/if}
       {#if cart.items.length === 0}
         <p>Your cart is empty.</p>
       {:else}

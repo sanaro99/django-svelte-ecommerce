@@ -59,3 +59,40 @@ export function logout() {
   localStorage.removeItem('access_token');
   sessionStorage.removeItem('pkce_code_verifier');
 }
+
+// Fetch current user's cart
+export async function fetchCart(token?: string) {
+  const res = await fetch(`${API_BASE}/cart/`, {
+    headers: getAuthHeaders(token),
+  });
+  if (!res.ok) throw new Error('Failed to fetch cart');
+  return res.json();
+}
+
+// Add item to cart
+export async function addToCart(productId: number, qty: number = 1, token?: string) {
+  const res = await fetch(`${API_BASE}/cart/add/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(token),
+    },
+    body: JSON.stringify({ product_id: productId, qty }),
+  });
+  if (!res.ok) throw new Error('Failed to add to cart');
+  return res.json();
+}
+
+// Remove item from cart
+export async function removeFromCart(itemId: number, token?: string) {
+  const res = await fetch(`${API_BASE}/cart/remove/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(token),
+    },
+    body: JSON.stringify({ item_id: itemId }),
+  });
+  if (!res.ok) throw new Error('Failed to remove from cart');
+  return res.json();
+}

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
-from catalog.models import Category, Product, ProductSpecification
-from sales.models import Customer, Order, OrderItem
+from catalog.models import Category, Product, ProductSpecification, ProductImage
+from sales.models import Customer, Order, OrderItem, Cart, CartItem
 from random import randint, uniform, choice, sample
 from django.utils.text import slugify
 
@@ -13,6 +13,8 @@ SPEC_NAMES = [
     "Model Number", "Battery Life", "Warranty", "Connectivity", "Display Size"
 ]
 
+def random_image_url():
+    return f"https://picsum.photos/seed/{randint(1, 1000)}/400/300"
 
 class Command(BaseCommand):
     help = "Seed the database with fake categories, products, customers, orders, and order items"
@@ -27,6 +29,10 @@ class Command(BaseCommand):
         Product.objects.all().delete()
         ProductSpecification.objects.all().delete()
         Category.objects.all().delete()
+        ProductImage.objects.all().delete()
+        # Clear cart data
+        CartItem.objects.all().delete()
+        Cart.objects.all().delete()
 
         # Create Categories
         categories = []
@@ -58,6 +64,9 @@ class Command(BaseCommand):
             for key in spec_keys:
                 value = fake.word().capitalize()
                 ProductSpecification.objects.create(product=product, name=key, value=value)
+            # Seed product images
+            for _ in range(3):
+                ProductImage.objects.create(product=product, url=random_image_url())
 
         # Create Customers
         customers = []

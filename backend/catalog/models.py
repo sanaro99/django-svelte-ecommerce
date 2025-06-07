@@ -54,3 +54,15 @@ class ProductSpecification(models.Model):
 
     def __str__(self):
         return f"{self.product.name}: {self.name}={self.value}"
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        Product,
+        related_name="images",
+        on_delete=models.CASCADE,
+    )
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.product.name} image: {self.url}"

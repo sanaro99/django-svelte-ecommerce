@@ -24,7 +24,9 @@
     loading = true;
     try {
       const order = await checkoutCart();
-      successMessage = `Order #${order.id} placed successfully!`;
+      successMessage = `Thanks for Shopping!Order #${order.id} placed successfully!`;
+      cart = { items: [], total_amount: 0 };
+      qtyMap = {};
     } catch (e: any) {
       error = e.message;
     } finally {
@@ -71,7 +73,7 @@
   }
 </script>
 
-<div class="p-6 max-w-2xl mx-auto">
+<div class="p-6 flex flex-col mx-auto">
   <div class="bg-white shadow-lg rounded-3xl p-6">
     <h2 class="text-2xl font-bold mb-4">Your Cart</h2>
     {#if loading}

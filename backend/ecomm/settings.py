@@ -36,6 +36,8 @@ ALLOWED_HOSTS = [
     os.getenv("BACKEND_PROD_URL"),  # backend
 ]
 
+# print("DEBUG: ALLOWED_HOSTS loaded:", ALLOWED_HOSTS)
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -69,6 +71,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     os.getenv("FRONTEND_PROD_URL"),
+    "https://" + os.getenv("BACKEND_PROD_URL"),
 ]
 
 CORS_ALLOW_CREDENTIALS = False

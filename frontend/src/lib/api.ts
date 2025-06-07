@@ -1,8 +1,7 @@
 // Base URLs from env
-const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || 'http://localhost:8000';
-const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
-const API_BASE = `${BACKEND_BASE_URL}/api`;
-export { BACKEND_BASE_URL, FRONTEND_BASE_URL };
+export const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || 'http://localhost:8000';
+export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
+export const API_BASE = `${BACKEND_BASE_URL}/api`;
 
 export async function fetchProducts(page: number = 1, category?: number, inStockOnly: boolean = false, token?: string) {
   let url = `${API_BASE}/products/?page=${page}`;
@@ -54,10 +53,13 @@ export async function fetchProductsByCategory(categoryId: number, token?: string
 
 // Fetch current authenticated user details
 export async function fetchCurrentUser(token?: string) {
+  const t = token || localStorage.getItem('access_token');
+  if (!t) return null;
   const res = await fetch(`${BACKEND_BASE_URL}/accounts/user/`, {
-    headers: getAuthHeaders(token),
+    headers: getAuthHeaders(t),
   });
-  if (!res.ok) throw new Error('Failed to fetch user details');
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error(`Failed to fetch user details (${res.status})`);
   return res.json();
 }
 

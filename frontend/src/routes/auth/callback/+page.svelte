@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { FRONTEND_BASE_URL, BACKEND_BASE_URL } from '$lib/api';
   import { onMount } from 'svelte';
   let errorMessage = '';
 
@@ -14,7 +15,7 @@
 
     if (code && code_verifier) {
       // Exchange code for token
-      const res = await fetch("http://localhost:8000/o/token/", {
+      const res = await fetch(`${BACKEND_BASE_URL}/o/token/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -22,7 +23,7 @@
         body: new URLSearchParams({
           grant_type: "authorization_code",
           code,
-          redirect_uri: "http://localhost:5173/auth/callback",
+          redirect_uri: `${FRONTEND_BASE_URL}/auth/callback`,
           client_id: import.meta.env.VITE_CLIENT_ID,
           code_verifier: code_verifier
         })

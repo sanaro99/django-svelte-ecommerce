@@ -2,12 +2,15 @@
   import { onMount } from 'svelte';
   import { fetchProducts, fetchCurrentUser, logout } from '$lib/api';
 
-  let products = [];
+  let products: any[] = [];
   let loading = true;
   let error = '';
   let user = { username: '', email: '' };
   let userLoading = true;
   let userError = '';
+  let page: number = 1;
+  let next: string | null = null;
+  let loadingMore: boolean = false;
 
   onMount(async () => {
     try {
@@ -20,8 +23,9 @@
     }
 
     try {
-      const res = await fetchProducts();
+      const res = await fetchProducts(page);
       products = res.results;
+      next = res.next;
     } catch (e: any) {
       error = e.message;
     } finally {
@@ -29,9 +33,25 @@
     }
   });
 
+  async function loadMore() {
+    if (!next) return;
+    loadingMore = true;
+    try {
+      page += 1;
+      const res = await fetchProducts(page);
+      products = [...products, ...res.results];
+      next = res.next;
+    } catch (e: any) {
+      error = e.message;
+    } finally {
+      loadingMore = false;
+    }
+  }
+
   function handleLogout() {
+    // Clear local tokens and redirect to backend logout to clear session
     logout();
-    window.location.href = '/login';
+    window.location.href = 'http://localhost:8000/accounts/logout/?next=http://localhost:5173/login';
   }
 </script>
 
@@ -72,6 +92,14 @@
           </div>
         {/each}
       </div>
+      {#if next}
+        <div class="mt-6 flex justify-center">
+          <button on:click={loadMore} disabled={loadingMore}
+                  class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50">
+            {#if loadingMore}Loading...{:else}Load More{/if}
+          </button>
+        </div>
+      {/if}
     {/if}
   </main>
 </div>

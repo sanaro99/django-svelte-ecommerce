@@ -41,3 +41,16 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductSpecification(models.Model):
+    product = models.ForeignKey(
+        Product,
+        related_name="specifications",
+        on_delete=models.CASCADE,
+    )
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.product.name}: {self.name}={self.value}"

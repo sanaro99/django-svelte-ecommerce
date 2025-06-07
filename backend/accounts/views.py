@@ -7,8 +7,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.serializers import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import logout as django_logout
+from django.conf import settings
+from django.shortcuts import redirect
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -26,8 +29,9 @@ class RegisterView(APIView):
 
         try:
             validate_password(password)
-        except ValidationError as e:
-            return Response({"error": str(e)}, status=400)
+        except DjangoValidationError as e:
+            # Return password field errors to frontend
+            return Response({'password': e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(username=username, password=password, email=email)
         return Response({"success": True, "user_id": user.id}, status=201)
@@ -39,3 +43,11 @@ class UserDetail(APIView):
     def get(self, request):
         user = request.user
         return Response({'username': user.username, 'email': user.email})
+
+def public_logout(request):
+    """
+    Logs out via GET and redirects to 'next' parameter or LOGIN_REDIRECT_URL.
+    """
+    django_logout(request)
+    next_url = request.GET.get('next') or settings.LOGIN_REDIRECT_URL
+    return redirect(next_url)

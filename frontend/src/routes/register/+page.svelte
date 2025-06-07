@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   let username = '';
   let email = '';
   let password = '';
@@ -7,52 +7,61 @@
   let messageType = ''; // 'success' or 'error'
 
   async function handleSubmit() {
+    // Clear any previous message
+    message = '';
+    messageType = '';
+
     if (password !== password2) {
       message = 'Passwords do not match.';
       messageType = 'error';
       return;
     }
 
-    const userData = {
-      username,
-      email,
-      password,
-      password2
-    };
+    const userData = { username, email, password, password2 };
+    let res: Response;
+    let data: any;
 
     try {
-      const response = await fetch('http://localhost:8000/accounts/register/', {
+      res = await fetch('http://localhost:8000/accounts/register/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }, 
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       });
+    } catch (networkError: any) {
+      console.error('Network error during registration:', networkError);
+      message = networkError.message || 'Network error. Please try again.';
+      messageType = 'error';
+      return;
+    }
 
-      const data = await response.json();
+    // Attempt to parse JSON; fallback if invalid
+    try {
+      data = await res.json();
+    } catch (parseError) {
+      console.error('Invalid JSON response:', parseError);
+      message = `Server error (${res.status}). Please try again.`;
+      messageType = 'error';
+      return;
+    }
 
-      if (response.ok) {
-        message = data.message || 'Registration successful! Please login.';
-        messageType = 'success';
-        // Optionally, redirect to login page or clear form
-        username = '';
-        email = '';
-        password = '';
-        password2 = '';
-      } else {
-        // Attempt to construct a more detailed error message
-        let errorDetail = '';
-        if (data.username) errorDetail += `Username: ${data.username.join(' ')} `;
-        if (data.email) errorDetail += `Email: ${data.email.join(' ')} `;
-        if (data.password) errorDetail += `Password: ${data.password.join(' ')} `;
-        if (data.non_field_errors) errorDetail += `${data.non_field_errors.join(' ')} `;
-        
-        message = errorDetail || data.message || 'Registration failed. Please try again.';
-        messageType = 'error';
+    if (res.ok) {
+      message = data.message || 'Registration successful! Please login.';
+      messageType = 'success';
+      // Clear form
+      username = '';
+      email = '';
+      password = '';
+      password2 = '';
+    } else {
+      // Build error detail from backend fields
+      let errorDetail = '';
+      if (data.error) errorDetail += `${data.error} `;
+      for (const key in data) {
+        if (Array.isArray(data[key])) {
+          errorDetail += `${key}: ${data[key].join(' ')} `;
+        }
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      message = 'An error occurred during registration. Please try again.';
+      message = errorDetail.trim() || `Error ${res.status}: ${res.statusText}`;
       messageType = 'error';
     }
   }

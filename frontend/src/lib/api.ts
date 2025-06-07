@@ -1,7 +1,8 @@
 const API_BASE = 'http://localhost:8000/api';
 
-export async function fetchProducts(token?: string) { // Added optional token param for consistency
-  const res = await fetch(`${API_BASE}/products/`, {
+export async function fetchProducts(page: number = 1, token?: string) {
+  // Paginated fetch: default to page 1
+  const res = await fetch(`${API_BASE}/products/?page=${page}`, {
     headers: getAuthHeaders(token),
   });
   if (!res.ok) throw new Error('Failed to fetch products');
@@ -53,7 +54,7 @@ export async function fetchCurrentUser(token?: string) {
   return res.json();
 }
 
-// Logout helper: clear stored tokens
+// Logout helper: clear stored tokens only
 export function logout() {
   localStorage.removeItem('access_token');
   sessionStorage.removeItem('pkce_code_verifier');

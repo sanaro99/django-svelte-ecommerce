@@ -67,6 +67,7 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated", # IsAuthenticated / AllowAny
@@ -113,13 +114,14 @@ SPECTACULAR_SETTINGS = {
         "deepLinking": True,
         "withCredentials": True,
         "persistAuthorization": True,
-        "oauth2RedirectUrl": "http://localhost:8000/oauth2-redirect.html"
+        "oauth2RedirectUrl": "http://localhost:8000/docs/oauth2-redirect.html"
     },
 }
 
-print("DEBUG: SPECTACULAR_SETTINGS loaded:", SPECTACULAR_SETTINGS)
+# print("DEBUG: SPECTACULAR_SETTINGS loaded:", SPECTACULAR_SETTINGS)
 
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -137,7 +139,7 @@ ROOT_URLCONF = 'ecomm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

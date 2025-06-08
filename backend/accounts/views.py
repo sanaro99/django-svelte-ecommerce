@@ -12,6 +12,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from catalog.views import MethodScopedTokenHasScope
+from drf_spectacular.utils import extend_schema
+from .serializers import RegisterSerializer
 
 class RegisterView(APIView):
     """
@@ -19,7 +21,9 @@ class RegisterView(APIView):
     Create a new user account by providing username, password, and optional email.
     """
     permission_classes = [AllowAny]
-    
+    serializer_class = RegisterSerializer
+
+    @extend_schema(request=RegisterSerializer)
     def post(self, request):
         username = request.data.get("username")
         first_name = request.data.get("first_name", "")

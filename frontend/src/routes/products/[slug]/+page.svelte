@@ -74,8 +74,8 @@
         </div>
       {/if}
       <div class="mt-4 flex items-center space-x-2">
-        <input type="number" bind:value={qty} min="1" max={product.stock} class="w-20 border p-1 rounded" />
-        <button on:click={handleAddToCart} class="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50" disabled={adding || product.stock === 0}>
+        <input type="number" bind:value={qty} min="1" max={product.stock} class="w-20 border px-5 rounded-3xl" />
+        <button on:click={handleAddToCart} class="px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700 disabled:opacity-50" disabled={adding || product.stock === 0}>
           {#if adding}Adding...{:else}Add to Cart{/if}
         </button>
       </div>

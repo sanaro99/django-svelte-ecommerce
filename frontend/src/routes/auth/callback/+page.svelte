@@ -49,7 +49,7 @@
     <div class="bg-white p-6 rounded-3xl shadow-md text-center">
       <h2 class="text-xl font-semibold text-red-600 mb-2">Authorization Error</h2>
       <p class="text-gray-700">{errorMessage}</p>
-      <a href="/" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Go Home</a>
+      <a href="/" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700">Go Home</a>
     </div>
   </div>
 {:else}

@@ -24,7 +24,7 @@
     loading = true;
     try {
       const order = await checkoutCart();
-      successMessage = `Thanks for Shopping!Order #${order.id} placed successfully!`;
+      successMessage = `Thanks for Shopping! Order #${order.id} placed successfully!`;
       cart = { items: [], total_amount: 0 };
       qtyMap = {};
     } catch (e: any) {
@@ -104,14 +104,14 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.product.name}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <input type="number" bind:value={qtyMap[item.id]} min="1" max={item.product.stock}
-                    class="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-3xl p-1 w-20"
+                    class="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-3xl p-1 px-4 w-20"
                     on:change={() => handleQtyChange(item.id)} />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.price}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.subtotal}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <button on:click={() => handleRemove(item.id)}
-                    class="px-2 py-1 bg-red-600 text-white rounded-3xl hover:bg-red-700 transition">Remove</button>
+                    class="px-2 py-2 bg-red-600 text-white rounded-3xl hover:bg-red-700 transition">Remove</button>
                 </td>
               </tr>
             {/each}
@@ -121,11 +121,10 @@
           <p class="text-lg font-semibold text-gray-900">Total: ${cart.total_amount}</p>
         </div>
         <button on:click={checkout}
-          class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700 transition">Checkout
+          class="mt-4 mx-2 px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700 transition">Checkout
         </button>
         <button on:click={() => window.location.href = '/'}
-          class="mt-4 px-4 py-2 bg-gray-600 text-white rounded-3xl hover:bg-gray-700 transition">Shop
-          More</button>
+          class="mt-4 mx-2 px-4 py-2 bg-gray-600 text-white rounded-3xl hover:bg-gray-700 transition">Shop More</button>
       {/if}
     {/if}
   </div>

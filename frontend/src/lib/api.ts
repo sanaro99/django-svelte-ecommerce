@@ -32,14 +32,18 @@ export async function fetchProductBySlug(slug: string, token?: string) {
   return res.json();
 }
 
-// Fetch all categories
-export async function fetchCategories(token?: string) {
-  const res = await fetch(`${API_BASE}/categories/`, {
-    headers: getAuthHeaders(token),
-  });
+// Fetch paginated categories
+export async function fetchCategories(
+  pageOrUrl: number | string = 1,
+  token?: string
+) {
+  const url =
+    typeof pageOrUrl === 'string'
+      ? pageOrUrl
+      : `${API_BASE}/categories/?page=${pageOrUrl}`;
+  const res = await fetch(url, { headers: getAuthHeaders(token) });
   if (!res.ok) throw new Error(`Failed to fetch categories (${res.status})`);
-  const data = await res.json();
-  return data.results ?? data;
+  return res.json();
 }
 
 // Fetch products by category id or slug (as needed)
@@ -134,23 +138,32 @@ export async function checkoutCart(token?: string) {
   return data;
 }
 
-// Fetch current user's orders
-export async function fetchOrders(token?: string, status?: string, createdAfter?: string) {
-  let url = `${API_BASE}/orders/`;
-  const params = new URLSearchParams();
-  if (status) params.append('status', status);
-  if (createdAfter) params.append('created_at__gte', createdAfter);
-  const query = params.toString();
-  const res = await fetch(query ? `${url}?${query}` : url, {
-    headers: getAuthHeaders(token),
-  });
+// Fetch paginated orders
+export async function fetchOrders(
+  pageOrUrl: number | string = 1,
+  status?: string,
+  createdAfter?: string,
+  token?: string
+) {
+  let url =
+    typeof pageOrUrl === 'string'
+      ? pageOrUrl
+      : `${API_BASE}/orders/?page=${pageOrUrl}`;
+  if (typeof pageOrUrl !== 'string') {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (createdAfter) params.append('created_at__gte', createdAfter);
+    const qs = params.toString();
+    if (qs) url += (url.includes('?') ? '&' : '?') + qs;
+  }
+  const res = await fetch(url, { headers: getAuthHeaders(token) });
   if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    const msg = data?.error || data?.detail || `Failed to fetch orders (${res.status})`;
+    const errData = await res.json().catch(() => ({}));
+    const msg =
+      errData?.error || errData?.detail || `Failed to fetch orders (${res.status})`;
     throw new Error(msg);
   }
-  const data = await res.json();
-  return data.results ?? data;
+  return res.json();
 }
 
 /**

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { fetchOrders, fetchCurrentUser } from '$lib/api';
   import { goto } from '$app/navigation';
 
@@ -10,6 +10,12 @@
   let monthsFilter = 0;
   const statuses = ['pending','paid','shipped','completed','cancelled'];
 
+  // pagination state
+  let page = 1;
+  let next: string | null = null;
+  let loadingMore = false;
+  let token: string | undefined;
+
   function capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -17,6 +23,7 @@
   async function loadOrders() {
     loading = true;
     error = '';
+    page = 1;
     let createdAfter: string | undefined;
     if (monthsFilter > 0) {
       const d = new Date();
@@ -24,11 +31,42 @@
       createdAfter = d.toISOString();
     }
     try {
-      orders = await fetchOrders(undefined, statusFilter || undefined, createdAfter);
+      const data = await fetchOrders(page, statusFilter || undefined, createdAfter, token);
+      orders = data.results;
+      next = data.next;
     } catch (e: any) {
       error = e.message;
     }
     loading = false;
+  }
+
+  // load more orders
+  async function loadMoreOrders() {
+    if (!next) return;
+    loadingMore = true;
+    let createdAfter: string | undefined;
+    if (monthsFilter > 0) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - monthsFilter);
+      createdAfter = d.toISOString();
+    }
+    try {
+      const data = await fetchOrders(next, statusFilter || undefined, createdAfter, token);
+      orders = [...orders, ...data.results];
+      next = data.next;
+    } catch (e: any) {
+      error = e.message;
+    } finally {
+      loadingMore = false;
+    }
+  }
+
+  // infinite scroll handler
+  function handleScroll() {
+    if (loadingMore || !next) return;
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+      loadMoreOrders();
+    }
   }
 
   onMount(async () => {
@@ -37,7 +75,17 @@
       goto('/login');
       return;
     }
+    const t = localStorage.getItem('access_token');
+    token = t ?? undefined;
     await loadOrders();
+  });
+
+  // register scroll listener
+  onMount(() => {
+    window.addEventListener('scroll', handleScroll);
+  });
+  onDestroy(() => {
+    window.removeEventListener('scroll', handleScroll);
   });
 </script>
 
@@ -99,6 +147,13 @@
           </div>
         {/each}
       </div>
+      {#if next}
+        <div class="text-center py-4">
+          <button on:click={loadMoreOrders} disabled={loadingMore} class="px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700 disabled:opacity-50">
+            {#if loadingMore}Loading…{:else}Load more orders{/if}
+          </button>
+        </div>
+      {/if}
     {/if}
   {/if}
 </div>

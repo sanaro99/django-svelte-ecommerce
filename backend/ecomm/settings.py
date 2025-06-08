@@ -79,7 +79,6 @@ CORS_ALLOW_CREDENTIALS = False
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated", # IsAuthenticated / AllowAny
@@ -112,29 +111,18 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for E-commerce platform",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
-    'OAUTH2_FLOWS': ['authorizationCode'],
+    'OAUTH2_FLOWS': ['password'],
     'OAUTH2_AUTHORIZATION_URL': "/o/authorize/",
     'OAUTH2_TOKEN_URL': "/o/token/",
     'OAUTH2_REFRESH_URL': None,
     'OAUTH2_SCOPES': {
-        "read:products": "Read products",
-        "write:products": "Edit products",
-        "read:orders": "Read orders",
-        "write:orders": "Edit orders",
-        "read:customers": "Read customers",
-        "write:customers": "Edit customers",
-        "read:cart": "Read cart",
-        "write:cart": "Modify cart contents",
     },
     "SWAGGER_UI_OAUTH2_CONFIG": {
-        "clientId": os.getenv("CLIENT_ID"),
-        "usePkceWithAuthorizationCodeGrant": True,
+        "clientId": os.getenv("SWAGGER_CLIENT_ID"),
+        "clientSecret": os.getenv("SWAGGER_CLIENT_SECRET"),
     },
     "SWAGGER_UI_SETTINGS": {
-        "deepLinking": True,
-        "withCredentials": True,
         "persistAuthorization": True,
-        "oauth2RedirectUrl": os.getenv("BACKEND_PROD_URL") + "/docs/oauth2-redirect.html"
     },
 }
 

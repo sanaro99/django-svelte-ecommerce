@@ -9,7 +9,6 @@ from catalog.views import MethodScopedTokenHasScope
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.authentication import SessionAuthentication
 from .models import Customer, Order, OrderItem, Cart, CartItem
 from .serializers import CustomerSerializer, OrderSerializer, OrderItemSerializer, CartSerializer
 from catalog.models import Product
@@ -20,7 +19,7 @@ class CustomerViewSet(ModelViewSet):
     """
     manage the Customer profile for the authenticated user
     """
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {
         'GET': ['read:customers'],
@@ -38,7 +37,7 @@ class OrderViewSet(ModelViewSet):
     """
     List and manipulate Orders belonging to the authenticated user
     """
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {
         'GET': ['read:orders'],
@@ -58,7 +57,7 @@ class OrderItemViewSet(ModelViewSet):
     """
     manage OrderItems within the authenticated user's Orders
     """
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {
         'GET': ['read:orders'],
@@ -76,7 +75,7 @@ class CartViewSet(ViewSet):
     """
     custom actions (list, add, remove, checkout) for the authenticated user's cart
     """
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {
         'GET': ['read:cart'],

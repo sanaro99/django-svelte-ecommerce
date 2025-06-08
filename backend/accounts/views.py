@@ -11,7 +11,6 @@ from django.contrib.auth import logout as django_logout
 from django.conf import settings
 from django.shortcuts import redirect
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.authentication import SessionAuthentication
 from catalog.views import MethodScopedTokenHasScope
 
 class RegisterView(APIView):
@@ -53,7 +52,7 @@ class UserDetail(APIView):
     """
     Retrieve the current authenticated user's username and email.
     """
-    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {'GET': ['read:customers'], 'PUT': ['write:customers']}
     

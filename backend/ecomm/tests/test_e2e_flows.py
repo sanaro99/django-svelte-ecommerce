@@ -1,11 +1,11 @@
 import json
 import yaml
+from urllib.parse import urlencode
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from oauth2_provider.models import Application
 from django.contrib.auth import get_user_model
-from urllib.parse import urlencode
 
 USERNAME = "testuser"
 PASSWORD = "pass1234"
@@ -40,85 +40,86 @@ class OAuth2TokenFlowTest(TestCase):
             name="TestApp",
             client_type=Application.CLIENT_CONFIDENTIAL,
             authorization_grant_type=Application.GRANT_PASSWORD,
-            user=self.user,
+            user=self.user,  # Owner of the application
             hash_client_secret=False,
         )
         self.client_id = self.application.client_id
         self.client_secret = self.application.client_secret
+        
 
-    # def test_token_endpoint(self):
-    #     payload = {
-    #         "grant_type": "password",
-    #         "username": USERNAME,
-    #         "password": PASSWORD,
-    #         "client_id": self.client_id,
-    #         "client_secret": self.client_secret,
-    #         "scope": SCOPES,
-    #     }
-    #     resp = self.client.post(
-    #         "/o/token/",
-    #         data=payload,
-    #         content_type="application/x-www-form-urlencoded",
-    #     )
-    #     if resp.status_code != 200:
-    #         print("Token endpoint failed:", resp.status_code, resp.content)
-    #     self.assertEqual(resp.status_code, 200)
-    #     data = resp.json()
-    #     self.assertIn("access_token", data)
-    #     self.assertEqual(data["token_type"].lower(), "bearer")
-    #     self.assertIn("scope", data)
+    def test_token_endpoint(self):
+        payload = urlencode({
+            'grant_type':self.application.authorization_grant_type,
+            'username':USERNAME,
+            'password':PASSWORD,
+            'client_id':self.client_id,
+            'client_secret':self.client_secret,
+            'scope':SCOPES,
+        })
+        # print("Payload: ", payload)
+        resp = self.client.post(
+            "/o/token/",
+            data=payload,
+            content_type="application/x-www-form-urlencoded",
+        )
+        if resp.status_code != 200:
+            print("Token endpoint failed:", resp.status_code, resp.content)
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("access_token", data)
+        self.assertEqual(data["token_type"].lower(), "bearer")
+        self.assertIn("scope", data)
 
 class E2EShoppingFlowTest(TestCase):
-    # def setUp(self):
-    #     # Create a user
-    #     self.user = get_user_model().objects.create_user(USERNAME, password=PASSWORD)
-    #     # Create OAuth2 application
-    #     self.application = Application.objects.create(
-    #         name="TestApp2",
-    #         client_type=Application.CLIENT_CONFIDENTIAL,
-    #         authorization_grant_type=Application.GRANT_PASSWORD,
-    #         user=self.user,  # Owner
-    #     )
-    #     self.client_id = self.application.client_id
-    #     self.client_secret = self.application.client_secret
-    #     # Get token
-    #     payload = {
-    #         "grant_type": "password",
-    #         "username": USERNAME,
-    #         "password": PASSWORD,
-    #         "client_id": self.client_id,
-    #         "client_secret": self.client_secret,
-    #         "scope": SCOPES,
-    #     }
-    #     print("Payload: ", payload)
-    #     resp = self.client.post(
-    #         "/o/token/",
-    #         data=payload,
-    #         content_type="application/x-www-form-urlencoded",
-    #     )
-    #     # print(f"Client type: {self.application.client_type}")  # Should be 'confidential'
-    #     # print(f"Grant type: {self.application.authorization_grant_type}")  # Should be 'password'
-    #     # print(f"User active: {self.user.is_active}")  # Should be True
-    #     if resp.status_code != 200:
-    #         print("~~~~~~~~~~~~Token error:", resp.status_code, resp.content)
-    #         raise Exception("OAuth2 token flow failed in test setup.")
-    #     self.token = resp.json()["access_token"]
+    def setUp(self):
+        # Create a user
+        self.user = get_user_model().objects.create_user(USERNAME, password=PASSWORD)
+        # Create OAuth2 application
+        self.application = Application.objects.create(
+            name="TestApp2",
+            client_type=Application.CLIENT_CONFIDENTIAL,
+            authorization_grant_type=Application.GRANT_PASSWORD,
+            user=self.user,  # Owner
+            hash_client_secret=False,
+        )
+        self.client_id = self.application.client_id
+        self.client_secret = self.application.client_secret
+        # Get token
+        payload = urlencode({
+            "grant_type": self.application.authorization_grant_type,
+            "username": USERNAME,
+            "password": PASSWORD,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scope": SCOPES,
+        })
+        resp = self.client.post(
+            "/o/token/",
+            data=payload,
+            content_type="application/x-www-form-urlencoded",
+        )
+        if resp.status_code != 200:
+            print("Token error:", resp.status_code, resp.content)
+            raise Exception("OAuth2 token flow failed in test setup.")
+        self.token = resp.json()["access_token"]
 
     def auth_get(self, url):
         return self.client.get(url, HTTP_AUTHORIZATION=f"Bearer {self.token}")
 
-    # def test_shopping_flow(self):
-    #     # Example: List products
-    #     resp = self.auth_get("/api/products/")
-    #     self.assertEqual(resp.status_code, 200)
-    #     products = resp.json().get("results", [])
-    #     self.assertIsInstance(products, list)
+    def test_shopping_flow(self):
+        # Example: List products
+        resp = self.auth_get("/api/products/")
+        self.assertEqual(resp.status_code, 200)
+        products = resp.json().get("results", [])
+        self.assertIsInstance(products, list)
 
-    #     # Example: List categories
-    #     resp = self.auth_get("/api/categories/")
-    #     self.assertEqual(resp.status_code, 200)
-    #     categories = resp.json().get("results", [])
-    #     self.assertIsInstance(categories, list)
+        # Example: List categories
+        resp = self.auth_get("/api/categories/")
+        self.assertEqual(resp.status_code, 200)
+        categories = resp.json().get("results", [])
+        self.assertIsInstance(categories, list)
+
+        # TODO: Add more E2E steps for cart, order, etc.
 
 class APIRootTest(TestCase):
     def setUp(self):
@@ -134,40 +135,19 @@ class APIRootTest(TestCase):
         self.client_id = self.application.client_id
         self.client_secret = self.application.client_secret
         # Get token
-        # payload = {
-        #     "grant_type": "password",
-        #     "username": USERNAME,
-        #     "password": PASSWORD,
-        #     "client_id": self.client_id,
-        #     "client_secret": self.client_secret,
-        #     "scope": SCOPES,
-        # }
-        # print("Payload: ", payload)
-        # resp = self.client.post(
-        #     "/o/token/",
-        #     data=payload,
-        #     content_type="application/x-www-form-urlencoded",
-            
-        # )
-
         payload = urlencode({
-            'grant_type': 'password',
-            'username': USERNAME,
-            'password': PASSWORD,  # Use raw password here, not hashed
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'scope': ' '.join(SCOPES) if isinstance(SCOPES, list) else SCOPES
+            "grant_type": self.application.authorization_grant_type,
+            "username": USERNAME,
+            "password": PASSWORD,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "scope": SCOPES,
         })
-
-        # headers = {
-        #     'Content-Type': 'application/x-www-form-urlencoded',
-        #     'Accept': 'application/json'
-        # }
-
+        # print("Payload: ", payload)
         resp = self.client.post(
-            '/o/token/',
+            "/o/token/",
             data=payload,
-            # headers=headers
+            content_type="application/x-www-form-urlencoded",
         )
         if resp.status_code != 200:
             print("Token error:", resp.status_code, resp.content)
@@ -175,12 +155,12 @@ class APIRootTest(TestCase):
         else:
             self.token = resp.json()["access_token"]
 
-    # def test_api_root_unauth(self):
-    #     resp = self.client.get('/api/')
-    #     self.assertEqual(resp.status_code, 401)
+    def test_api_root_unauth(self):
+        resp = self.client.get('/api/')
+        self.assertEqual(resp.status_code, 401)
 
-    # def test_api_root_auth(self):
-    #     if not self.token:
-    #         self.skipTest("Could not obtain OAuth2 token for auth test")
-    #     resp = self.client.get('/api/', HTTP_AUTHORIZATION=f"Bearer {self.token}")
-    #     self.assertEqual(resp.status_code, 200)
+    def test_api_root_auth(self):
+        if not self.token:
+            self.skipTest("Could not obtain OAuth2 token for auth test")
+        resp = self.client.get('/api/', HTTP_AUTHORIZATION=f"Bearer {self.token}")
+        self.assertEqual(resp.status_code, 200)

@@ -29,7 +29,6 @@ from rest_framework.permissions import AllowAny
 from oauth2_provider import urls as oauth2_urls
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
-
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='categories')
 router.register(r'products', ProductViewSet, basename='products')
@@ -45,4 +44,5 @@ urlpatterns = [
     path("o/", include(oauth2_urls, namespace="oauth2_provider")),  # token endpoints
     path("api/", include(router.urls)),
     path("accounts/", include("accounts.urls")),
+    path('', include('django_prometheus.urls')),
 ]

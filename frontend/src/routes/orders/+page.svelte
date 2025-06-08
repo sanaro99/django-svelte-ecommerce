@@ -51,7 +51,9 @@
       createdAfter = d.toISOString();
     }
     try {
-      const data = await fetchOrders(next, statusFilter || undefined, createdAfter, token);
+      // bump page number and use numeric paging to avoid mixed-content error
+      page += 1;
+      const data = await fetchOrders(page, statusFilter || undefined, createdAfter, token);
       orders = [...orders, ...data.results];
       next = data.next;
     } catch (e: any) {
@@ -63,7 +65,7 @@
 
   // infinite scroll handler
   function handleScroll() {
-    if (loadingMore || !next) return;
+    if (typeof window === 'undefined' || loadingMore || !next) return;
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
       loadMoreOrders();
     }
@@ -82,10 +84,14 @@
 
   // register scroll listener
   onMount(() => {
-    window.addEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handleScroll);
+    }
   });
   onDestroy(() => {
-    window.removeEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('scroll', handleScroll);
+    }
   });
 </script>
 

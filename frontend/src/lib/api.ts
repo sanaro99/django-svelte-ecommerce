@@ -1,6 +1,7 @@
 // Base URLs from env
 export const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL || 'http://localhost:8000';
-export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || window.location.origin;
+// use env override or window origin (guarded against SSR)
+export const FRONTEND_BASE_URL = import.meta.env.VITE_FRONTEND_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 export const API_BASE = `${BACKEND_BASE_URL}/api`;
 
 export async function fetchProducts(page: number = 1, category?: number, inStockOnly: boolean = false, token?: string) {

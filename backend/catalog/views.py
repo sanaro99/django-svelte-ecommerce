@@ -1,3 +1,7 @@
+# catalog/views.py: API endpoints for Category and Product management
+# - Secured via OAuth2 scopes (read:products/write:products) using MethodScopedTokenHasScope
+# - Provides CRUD operations with filtering, search, and ordering
+
 from rest_framework.viewsets import ModelViewSet
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
@@ -9,6 +13,9 @@ from rest_framework.permissions import IsAuthenticated # Import IsAuthenticated
 # This addresses an issue where the default TokenHasScope.get_scopes might incorrectly
 # return the entire dictionary instead of the list of scopes for the specific method.
 class MethodScopedTokenHasScope(TokenHasScope):
+    """
+    Custom permission class to handle OAuth2 scopes for different request methods.
+    """
     def get_scopes(self, request, view):
         # Attempt to get the dictionary of required scopes from the view.
         # Default to an empty dictionary if 'required_scopes' is not present.
@@ -29,6 +36,11 @@ class MethodScopedTokenHasScope(TokenHasScope):
         return []
 
 class CategoryViewSet(ModelViewSet):
+    """
+    Manage product categories for the store:
+    - GET: list & retrieve (requires 'read:products')
+    - POST/PUT/DELETE: create, update, delete (requires 'write:products')
+    """
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {
@@ -48,6 +60,12 @@ from .models import Product
 from .serializers import ProductSerializer
 
 class ProductViewSet(ModelViewSet):
+    """
+    Manage products:
+    - GET: list & retrieve (requires 'read:products')
+    - POST/PUT/DELETE: create, update, delete (requires 'write:products')
+    Supports search and ordering filters.
+    """
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
     required_scopes = {

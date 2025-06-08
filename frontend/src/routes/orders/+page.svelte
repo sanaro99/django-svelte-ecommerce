@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetchOrders } from '$lib/api';
+  import { fetchOrders, fetchCurrentUser } from '$lib/api';
+  import { goto } from '$app/navigation';
 
   let orders: any[] = [];
   let loading = true;
@@ -30,7 +31,14 @@
     loading = false;
   }
 
-  onMount(loadOrders);
+  onMount(async () => {
+    const user = await fetchCurrentUser();
+    if (!user) {
+      goto('/login');
+      return;
+    }
+    await loadOrders();
+  });
 </script>
 
 <div class="p-6 max-w-4xl mx-auto">

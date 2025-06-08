@@ -19,7 +19,7 @@
   }
 </script>
 
-<nav class="bg-white shadow-md">
+<nav class="bg-white shadow-md sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
     <div class="flex items-center">
       <img src="/logo.png" alt="Logo" class="h-10 w-32 mr-2" />
@@ -41,9 +41,11 @@
           </button>
           {#if dropdownOpen}
             <div class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-3xl py-2 z-20">
+              <div class="px-4 py-2 text-sm text-gray-700">{user.first_name} {user.last_name}</div>
               <div class="px-4 py-2 text-sm text-gray-700">{user.username}</div>
               <div class="px-4 py-2 text-sm text-gray-500">{user.email}</div>
               <div class="border-t my-1"></div>
+              <a href="/edit-account" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-indigo-600">Edit Account</a>
               <button on:click={handleLogout}
                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
             </div>

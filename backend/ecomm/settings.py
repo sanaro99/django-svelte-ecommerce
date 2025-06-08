@@ -101,6 +101,10 @@ OAUTH2_PROVIDER = {
         "write:products": "Edit products",
         "read:orders": "Read orders",
         "write:orders": "Edit orders",
+        "read:customers": "Read customers",
+        "write:customers": "Edit customers",
+        "read:cart": "Read cart",
+        "write:cart": "Modify cart contents",
     }
 }
 
@@ -118,6 +122,10 @@ SPECTACULAR_SETTINGS = {
         "write:products": "Edit products",
         "read:orders": "Read orders",
         "write:orders": "Edit orders",
+        "read:customers": "Read customers",
+        "write:customers": "Edit customers",
+        "read:cart": "Read cart",
+        "write:cart": "Modify cart contents",
     },
     "SWAGGER_UI_OAUTH2_CONFIG": {
         "clientId": os.getenv("CLIENT_ID"),

@@ -152,3 +152,37 @@ export async function fetchOrders(token?: string, status?: string, createdAfter?
   const data = await res.json();
   return data.results ?? data;
 }
+
+/**
+ * Update the current user's profile data.
+ * @param data Object with username, email, first_name, last_name, and optional profile fields (phone, street_address, city, state, postal_code, country)
+ * @param token Optional access token
+ */
+export async function updateUser(
+  data: {
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    phone?: string;
+    street_address?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+    country?: string;
+  },
+  token?: string
+) {
+  const t = token || localStorage.getItem('access_token');
+  const res = await fetch(`${BACKEND_BASE_URL}/accounts/user/`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(t ? { Authorization: `Bearer ${t}` } : {}),
+    },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(result.error || result.detail || `Failed to update user (${res.status})`);
+  return result;
+}

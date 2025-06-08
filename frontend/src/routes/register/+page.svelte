@@ -2,6 +2,8 @@
   import { BACKEND_BASE_URL } from '$lib/api';
   let username = '';
   let email = '';
+  let firstName = '';
+  let lastName = '';
   let password = '';
   let password2 = '';
   let message = '';
@@ -18,7 +20,7 @@
       return;
     }
 
-    const userData = { username, email, password, password2 };
+    const userData = { username, email, password, password2, first_name: firstName, last_name: lastName };
     let res: Response;
     let data: any;
 
@@ -51,6 +53,8 @@
       // Clear form
       username = '';
       email = '';
+      firstName = '';
+      lastName = '';
       password = '';
       password2 = '';
     } else {
@@ -93,6 +97,24 @@
           </label>
           <div class="mt-1">
             <input id="email" name="email" type="email" bind:value={email} autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="firstName" class="block text-sm font-medium text-gray-700">
+            First Name
+          </label>
+          <div class="mt-1">
+            <input id="firstName" name="first_name" type="text" bind:value={firstName} required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label for="lastName" class="block text-sm font-medium text-gray-700">
+            Last Name
+          </label>
+          <div class="mt-1">
+            <input id="lastName" name="last_name" type="text" bind:value={lastName} required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
           </div>
         </div>
 

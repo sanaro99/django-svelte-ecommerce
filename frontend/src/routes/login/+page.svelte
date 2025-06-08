@@ -23,7 +23,7 @@
       client_id: import.meta.env.VITE_CLIENT_ID,
       response_type: "code",
       redirect_uri: `${FRONTEND_BASE_URL}/auth/callback`, // must match Django app config
-      scope: "read:products write:products read:orders write:orders",
+      scope: "read:products read:orders read:customers read:cart write:orders write:customers write:cart",
       code_challenge: code_challenge,
       code_challenge_method: "S256"
     });

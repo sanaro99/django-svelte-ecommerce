@@ -1,5 +1,11 @@
+# sales/views.py: API endpoints for Customer, Order, OrderItem, and Cart management
+# - Secured via OAuth2 scopes (read:customers/write:customers, read:orders/write:orders, read:cart/write:cart) using MethodScopedTokenHasScope
+# - Querysets filtered to request.user for Customer, Orders, and OrderItems
+# - CartViewSet offers custom cart actions (list, add, remove, checkout) scoped to request.user
+
 from rest_framework.viewsets import ModelViewSet, ViewSet
-from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope, OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from catalog.views import MethodScopedTokenHasScope
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -11,37 +17,69 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 class CustomerViewSet(ModelViewSet):
-    permission_classes = [TokenHasReadWriteScope]
-    required_scopes_for_read = ['read:orders']  # Assuming customer data is part of order context
-    required_scopes_for_write = ['write:orders'] # Assuming customer data is part of order context
-    queryset = Customer.objects.all()
+    """
+    manage the Customer profile for the authenticated user
+    """
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
+    required_scopes = {
+        'GET': ['read:customers'],
+        'POST': ['write:customers'],
+        'PUT': ['write:customers'],
+        'PATCH': ['write:customers'],
+        'DELETE': ['write:customers'],
+    }
+    def get_queryset(self):
+        return Customer.objects.filter(user=self.request.user)
     serializer_class = CustomerSerializer
 
 class OrderViewSet(ModelViewSet):
+    """
+    List and manipulate Orders belonging to the authenticated user
+    """
     authentication_classes = [OAuth2Authentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Order.objects.select_related("customer").prefetch_related("items__product").all().order_by('-created_at')
+    permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
+    required_scopes = {
+        'GET': ['read:orders'],
+        'POST': ['write:orders'],
+        'PUT': ['write:orders'],
+        'PATCH': ['write:orders'],
+        'DELETE': ['write:orders'],
+    }
+    def get_queryset(self):
+        return Order.objects.select_related("customer").prefetch_related("items__product").filter(customer__user=self.request.user).order_by('-created_at')
     serializer_class = OrderSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = {'status': ['exact'], 'created_at': ['gte']}
     ordering_fields = ['created_at']
 
-    def get_queryset(self):
-        # Only return orders for the logged-in user
-        user = self.request.user
-        return Order.objects.select_related("customer").prefetch_related("items__product").filter(customer__user=user).order_by('-created_at')
-
 class OrderItemViewSet(ModelViewSet):
-    permission_classes = [TokenHasReadWriteScope]
-    required_scopes_for_read = ['read:orders']
-    required_scopes_for_write = ['write:orders']
-    queryset = OrderItem.objects.select_related("order", "product").all()
+    """
+    manage OrderItems within the authenticated user's Orders
+    """
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
+    required_scopes = {
+        'GET': ['read:orders'],
+        'POST': ['write:orders'],
+        'PUT': ['write:orders'],
+        'PATCH': ['write:orders'],
+        'DELETE': ['write:orders'],
+    }
+    def get_queryset(self):
+        return OrderItem.objects.select_related("order", "product").filter(order__customer__user=self.request.user)
     serializer_class = OrderItemSerializer
 
 class CartViewSet(ViewSet):
-    """ViewSet for user cart: list, add items, remove items"""
+    """
+    custom actions (list, add, remove, checkout) for the authenticated user's cart
+    """
     authentication_classes = [OAuth2Authentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, MethodScopedTokenHasScope]
+    required_scopes = {
+        'GET': ['read:cart'],
+        'POST': ['write:cart'],
+    }
 
     def list(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)

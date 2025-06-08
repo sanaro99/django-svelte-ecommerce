@@ -30,11 +30,11 @@ from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, Token
 
 
 router = DefaultRouter()
-router.register(r'categories', CategoryViewSet)
-router.register(r'products', ProductViewSet)
-router.register(r'customers', CustomerViewSet)
-router.register(r'orders', OrderViewSet)
-router.register(r'order-items', OrderItemViewSet)
+router.register(r'categories', CategoryViewSet, basename='categories')
+router.register(r'products', ProductViewSet, basename='products')
+router.register(r'customers', CustomerViewSet, basename='customers')
+router.register(r'orders', OrderViewSet, basename='orders')
+router.register(r'order-items', OrderItemViewSet, basename='order-items')
 router.register(r'cart', CartViewSet, basename='cart')
 
 urlpatterns = [

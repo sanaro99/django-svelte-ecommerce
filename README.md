@@ -55,7 +55,7 @@ Redirect URI list:
 <your-frontend-url>/auth/callback
 ```
 Finally, run the server:
-```
+```bash
 python manage.py runserver
 ```
 
@@ -67,6 +67,23 @@ npm install
 npm run dev
 ```
 
+## Running Tests
+
+### Backend
+
+```bash
+cd backend
+python manage.py test
+```
+
+For more info, check [backend/ecomm/TESTING.md](backend/ecomm/TESTING.md)
+
+### Frontend
+
+```bash
+cd frontend
+npm run test
+```
 
 ## Deployment
 
@@ -91,7 +108,7 @@ npm run dev
   - VITE_CLIENT_ID
   - VITE_FRONTEND_BASE_URL
 - Build command: `npm run build` # This is the default build command
-- Output directory: `build` # This is the default output director
+- Output directory: `build` # This is the default output directory
 
 ### Database (Supabase)
 - Use Supabase Postgres in production.

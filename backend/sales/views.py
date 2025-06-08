@@ -30,7 +30,8 @@ class CustomerViewSet(ModelViewSet):
         'DELETE': ['write:customers'],
     }
     def get_queryset(self):
-        return Customer.objects.filter(user=self.request.user)
+        # enforce consistent ordering to satisfy pagination requirements
+        return Customer.objects.filter(user=self.request.user).order_by('id')
     serializer_class = CustomerSerializer
 
 class OrderViewSet(ModelViewSet):
@@ -67,7 +68,8 @@ class OrderItemViewSet(ModelViewSet):
         'DELETE': ['write:orders'],
     }
     def get_queryset(self):
-        return OrderItem.objects.select_related("order", "product").filter(order__customer__user=self.request.user)
+        # enforce consistent ordering to satisfy pagination requirements
+        return OrderItem.objects.select_related("order", "product").filter(order__customer__user=self.request.user).order_by('id')
     serializer_class = OrderItemSerializer
 
 class CartViewSet(ViewSet):
@@ -125,6 +127,10 @@ class CartViewSet(ViewSet):
         order = Order.objects.create(customer=customer, status='pending')
         for item in cart.items.all():
             OrderItem.objects.create(order=order, product=item.product, qty=item.qty, price=item.price)
+            # decrement product stock
+            product = item.product
+            product.stock -= item.qty
+            product.save()
         cart.items.all().delete()
         serializer = OrderSerializer(order)
         return Response(serializer.data)

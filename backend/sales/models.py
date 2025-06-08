@@ -16,6 +16,9 @@ class Customer(models.Model):
     country = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['id']
+
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
 
@@ -62,6 +65,7 @@ class OrderItem(models.Model):
 
     class Meta:
         unique_together = ("order", "product")
+        ordering = ['id']
 
     @property
     def subtotal(self):

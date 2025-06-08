@@ -24,6 +24,7 @@ from django.urls import include
 admin.autodiscover()
 
 from rest_framework import generics, permissions, serializers
+from rest_framework.permissions import AllowAny
 
 from oauth2_provider import urls as oauth2_urls
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
@@ -39,8 +40,8 @@ router.register(r'cart', CartViewSet, basename='cart')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/', SpectacularAPIView.as_view(permission_classes=[AllowAny]), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='schema', permission_classes=[AllowAny]), name='swagger-ui'),
     path("o/", include(oauth2_urls, namespace="oauth2_provider")),  # token endpoints
     path("api/", include(router.urls)),
     path("accounts/", include("accounts.urls")),

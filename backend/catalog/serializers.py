@@ -17,7 +17,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['url']
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     specifications = ProductSpecificationSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
 

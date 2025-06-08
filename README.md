@@ -85,6 +85,12 @@ cd frontend
 npm run test
 ```
 
+## API Documentation and Usage Examples
+
+API Documentation is available at [https://django-svelte-ecommerce-production.up.railway.app/docs/](https://django-svelte-ecommerce-production.up.railway.app/docs/)
+
+Check [API Usage Examples](backend/README.md#api-usage-examples) to see how the API is used.
+
 ## Deployment
 
 ### Backend (Railway)

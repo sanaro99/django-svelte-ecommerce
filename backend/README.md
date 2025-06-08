@@ -35,4 +35,81 @@ accounts/     # User models, API for registration, login, logout, connection wit
 
 ```
 
+## API Usage Examples
+Below are sample `curl` commands demonstrating common API operations. Replace `<ACCESS_TOKEN>`, `<CLIENT_ID>`, `<CLIENT_SECRET>`, `<USERNAME>`, and `<PASSWORD>` as needed.
+
+### 1. Obtain Access Token (Password Grant)
+```bash
+curl -X POST http://localhost:8000/o/token/ \
+  -u <CLIENT_ID>:<CLIENT_SECRET> \
+  -d grant_type=password \
+  -d username=<USERNAME> \
+  -d password=<PASSWORD>
+```
+
+### 2. Register New User
+```bash
+curl -X POST http://localhost:8000/accounts/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "alice", "password": "pass123", "email": "alice@example.com"}'
+```
+
+### 3. Get Current User Profile
+```bash
+curl -X GET http://localhost:8000/accounts/user/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 4. List Categories
+```bash
+curl -X GET http://localhost:8000/api/categories/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 5. List Products (Paginated)
+```bash
+curl -X GET http://localhost:8000/api/products/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 6. Filter Products by Category
+```bash
+curl -X GET "http://localhost:8000/api/products/?category=1" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 7. Create a New Order
+```bash
+curl -X POST http://localhost:8000/api/orders/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"items": [{"product": 2, "qty": 3},{"product":5,"qty":1}]}'
+```
+
+### 8. List Orders
+```bash
+curl -X GET http://localhost:8000/api/orders/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 9. Order Details
+```bash
+curl -X GET http://localhost:8000/api/orders/1/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 10. Add Product to Cart
+```bash
+curl -X POST http://localhost:8000/api/cart/add/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"product_id": 3, "qty": 2}'
+```
+
+### 11. Checkout Cart
+```bash
+curl -X POST http://localhost:8000/api/cart/checkout/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
 ---

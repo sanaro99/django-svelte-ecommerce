@@ -2,6 +2,8 @@
   import { onMount, onDestroy } from 'svelte';
   import { fetchOrders, fetchCurrentUser } from '$lib/api';
   import { goto } from '$app/navigation';
+  import OrderCard from '$lib/components/OrderCard.svelte';
+  import LoadMoreButton from '$lib/components/LoadMoreButton.svelte';
 
   let orders: any[] = [];
   let loading = true;
@@ -121,43 +123,12 @@
     {:else}
       <div class="space-y-6">
         {#each orders as order}
-          <div class="bg-white shadow p-4 rounded-3xl">
-            <div class="flex justify-between items-center mb-2">
-              <span class="font-semibold">Order #{order.id}</span>
-              <span class="text-sm text-gray-500">{new Date(order.created_at).toLocaleString()}</span>
-            </div>
-            <div class="flex justify-between items-center mb-4">
-              <span class="text-sm">Status: <span class="capitalize">{order.status}</span></span>
-              <span class="font-semibold">Total: ${order.total_amount}</span>
-            </div>
-            <table class="w-full divide-y divide-gray-200 mb-2">
-              <thead>
-                <tr class="bg-gray-50">
-                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Qty</th>
-                  <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
-                  <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {#each order.items as item}
-                  <tr class="border-b">
-                    <td class="px-3 py-2 text-sm text-gray-700">{item.product.name}</td>
-                    <td class="px-3 py-2 text-sm text-gray-700 text-right">{item.qty}</td>
-                    <td class="px-3 py-2 text-sm text-gray-700 text-right">${item.price}</td>
-                    <td class="px-3 py-2 text-sm text-gray-700 text-right">${item.subtotal}</td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
-          </div>
+          <OrderCard {order} />
         {/each}
       </div>
       {#if next}
         <div class="text-center py-4">
-          <button on:click={loadMoreOrders} disabled={loadingMore} class="px-4 py-2 bg-indigo-600 text-white rounded-3xl hover:bg-indigo-700 disabled:opacity-50">
-            {#if loadingMore}Loading…{:else}Load more orders{/if}
-          </button>
+          <LoadMoreButton on:click={loadMoreOrders} loading={loadingMore} label="Load more orders" />
         </div>
       {/if}
     {/if}

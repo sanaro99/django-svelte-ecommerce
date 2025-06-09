@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { fetchProducts, fetchCategories } from '$lib/api';
+  import ProductCard from '$lib/components/ProductCard.svelte';
+  import LoadMoreButton from '$lib/components/LoadMoreButton.svelte';
 
   let products: any[] = [];
   let categories: any[] = [];
@@ -159,25 +161,12 @@
   {:else}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {#each products as product}
-        <div class="bg-white rounded-3xl shadow-sm hover:shadow-md overflow-hidden transition-shadow duration-200">
-          {#if product.images?.length}
-            <img src={product.images[0].url} alt={product.name} class="w-full h-48 object-cover rounded-t-lg" />
-          {/if}
-          <div class="p-4">
-            <a href={`/products/${product.slug}`} class="text-lg font-semibold text-gray-800 hover:text-indigo-600 transition">
-              {product.name}
-            </a>
-            <p class="text-gray-700 mt-2 font-semibold">${product.price}</p>
-          </div>
-        </div>
+        <ProductCard {product} />
       {/each}
     </div>
     {#if next}
       <div class="mt-6 flex justify-center">
-        <button on:click={loadMore} disabled={loadingMore}
-                class="px-5 py-2 bg-indigo-600 text-white rounded-3xl shadow hover:bg-indigo-700 transition disabled:opacity-50">
-          {#if loadingMore}Loading...{:else}Load More{/if}
-        </button>
+        <LoadMoreButton on:click={loadMore} loading={loadingMore} label="Load More" />
       </div>
     {/if}
   {/if}

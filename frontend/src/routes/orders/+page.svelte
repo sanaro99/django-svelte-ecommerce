@@ -3,7 +3,6 @@
   import { fetchOrders, fetchCurrentUser } from '$lib/api';
   import { goto } from '$app/navigation';
   import OrderCard from '$lib/components/OrderCard.svelte';
-  import LoadMoreButton from '$lib/components/LoadMoreButton.svelte';
 
   let orders: any[] = [];
   let loading = true;
@@ -102,7 +101,7 @@
   <!-- Filters -->
   <div class="flex flex-wrap gap-4 mb-4">
     <select bind:value={statusFilter} on:change={loadOrders} class="px-3 py-2 border rounded-3xl pr-10">
-      <option value=''>All Statuses</option>
+      <option value='' class="">All Statuses</option>
       {#each statuses as s}
         <option value={s}>{capitalize(s)}</option>
       {/each}
@@ -127,8 +126,20 @@
         {/each}
       </div>
       {#if next}
-        <div class="text-center py-4">
-          <LoadMoreButton on:click={loadMoreOrders} loading={loadingMore} label="Load more orders" />
+        <div class="text-center py-4 space-x-2">
+          {#if loadingMore}
+            <button class="btn btn-square" disabled>
+              <span class="loading loading-spinner"></span>
+            </button>
+            <button class="btn" disabled>
+              <span class="loading loading-spinner"></span>
+              loading
+            </button>
+          {:else}
+            <button class="btn btn-outline" on:click={loadMoreOrders}>
+              Load more orders
+            </button>
+          {/if}
         </div>
       {/if}
     {/if}

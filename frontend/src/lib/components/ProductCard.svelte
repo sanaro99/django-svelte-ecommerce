@@ -1,15 +1,15 @@
-<script>
-  export let product;
+<script lang="ts">
+  export let product: any;
 </script>
 
-<a href={`/products/${product.slug}`} class="text-lg font-semibold text-gray-800 hover:text-indigo-600 transition">
-    <div class="bg-white rounded-3xl shadow-sm hover:shadow-md overflow-hidden transition-shadow duration-200">
+<a href={`/products/${product.slug}`} class="card-title link link-hover">
+  <div class="card card-compact bg-base-100 shadow-xl hover:shadow-2xl transition duration-200 rounded-3xl">
     {#if product.images?.length}
-        <img src={product.images[0].url} alt={product.name} class="w-full h-48 object-cover rounded-t-lg" />
+      <figure><img src={product.images[0].url} alt={product.name} /></figure>
     {/if}
-    <div class="p-4">
-        {product.name}
-        <p class="text-gray-700 mt-2 font-semibold">${product.price}</p>
+    <div class="card-body text-lg font-semibold">
+      {product.name}
+      <p class="text-sm">${product.price}</p>
     </div>
-    </div>
+  </div>
 </a>

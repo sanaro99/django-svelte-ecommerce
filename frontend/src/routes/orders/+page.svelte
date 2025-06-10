@@ -21,6 +21,8 @@
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  $: selectedStatusName = statusFilter ? capitalize(statusFilter) : 'All Statuses';
+
   async function loadOrders() {
     loading = true;
     error = '';
@@ -100,12 +102,15 @@
   <h2 class="text-2xl font-bold mb-4">Your Orders</h2>
   <!-- Filters -->
   <div class="flex flex-wrap gap-4 mb-4">
-    <select bind:value={statusFilter} on:change={loadOrders} class="px-3 py-2 border rounded-3xl pr-10">
-      <option value='' class="">All Statuses</option>
-      {#each statuses as s}
-        <option value={s}>{capitalize(s)}</option>
-      {/each}
-    </select>
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn m-1">{selectedStatusName}</div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+        <li on:click={() => { statusFilter = ''; loadOrders(); }}><a>All Statuses</a></li>
+        {#each statuses as s}
+          <li on:click={() => { statusFilter = s; loadOrders(); }}><a>{capitalize(s)}</a></li>
+        {/each}
+      </ul>
+    </div>
     <label class="inline-flex items-center">
       <span class="mr-2">Last</span>
       <input type="number" min="0" bind:value={monthsFilter} on:change={loadOrders} class="w-16 px-2 py-1 border rounded-3xl" />

@@ -8,7 +8,7 @@
   let loading = true;
   let error = '';
   let statusFilter = '';
-  let monthsFilter = 0;
+  let monthsFilter = 1;
   const statuses = ['pending','paid','shipped','completed','cancelled'];
 
   // pagination state
@@ -103,8 +103,8 @@
   <!-- Filters -->
   <div class="flex flex-wrap gap-4 mb-4">
     <div class="dropdown">
-      <div tabindex="0" role="button" class="btn m-1">{selectedStatusName}</div>
-      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+      <div tabindex="0" role="button" class="btn m-1 rounded-3xl">{selectedStatusName}</div>
+      <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-3xl z-1 w-52 p-2 shadow-xl">
         <li on:click={() => { statusFilter = ''; loadOrders(); }}><a>All Statuses</a></li>
         {#each statuses as s}
           <li on:click={() => { statusFilter = s; loadOrders(); }}><a>{capitalize(s)}</a></li>
@@ -113,7 +113,7 @@
     </div>
     <label class="inline-flex items-center">
       <span class="mr-2">Last</span>
-      <input type="number" min="0" bind:value={monthsFilter} on:change={loadOrders} class="w-16 px-2 py-1 border rounded-3xl" />
+      <input type="number" min="1" bind:value={monthsFilter} on:change={loadOrders} class="input max-w-20 rounded-3xl" />
       <span class="ml-2">months</span>
     </label>
   </div>
@@ -133,10 +133,7 @@
       {#if next}
         <div class="text-center py-4 space-x-2">
           {#if loadingMore}
-            <button class="btn btn-square" disabled>
-              <span class="loading loading-spinner"></span>
-            </button>
-            <button class="btn" disabled>
+            <button class="btn">
               <span class="loading loading-spinner"></span>
               loading
             </button>

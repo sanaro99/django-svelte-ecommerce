@@ -72,72 +72,69 @@
   }
 </script>
 
-<div class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-      Create your account
-    </h2>
-  </div>
-
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow sm:rounded-3xl sm:px-10">
-      <form class="space-y-6" on:submit|preventDefault={handleSubmit}>
+<div class="container mx-auto">
+  <div class="card rounded-3xl shadow-xl max-w-xl mx-auto">
+    <div class="card-body">
+      <div class="mt-6 text-3xl text-center font-extrabold">
+        Create your account
+      </div>
+      <form class="space-y-4" on:submit|preventDefault={handleSubmit}>
         <div>
-          <label for="username" class="block text-sm font-medium text-gray-700">
+          <label for="username">
             Username
           </label>
           <div class="mt-1">
-            <input id="username" name="username" type="text" bind:value={username} required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="username" name="username" type="text" bind:value={username} required class="input w-full">
           </div>
         </div>
 
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">
+          <label for="email">
             Email address
           </label>
           <div class="mt-1">
-            <input id="email" name="email" type="email" bind:value={email} autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="email" name="email" type="email" bind:value={email} autocomplete="email" required class="input w-full">
           </div>
         </div>
 
         <div>
-          <label for="firstName" class="block text-sm font-medium text-gray-700">
+          <label for="firstName">
             First Name
           </label>
           <div class="mt-1">
-            <input id="firstName" name="first_name" type="text" bind:value={firstName} required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="firstName" name="first_name" type="text" bind:value={firstName} required class="input w-full">
           </div>
         </div>
 
         <div>
-          <label for="lastName" class="block text-sm font-medium text-gray-700">
+          <label for="lastName">
             Last Name
           </label>
           <div class="mt-1">
-            <input id="lastName" name="last_name" type="text" bind:value={lastName} required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="lastName" name="last_name" type="text" bind:value={lastName} required class="input w-full">
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700">
+          <label for="password">
             Password
           </label>
           <div class="mt-1">
-            <input id="password" name="password" type="password" bind:value={password} autocomplete="new-password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="password" name="password" type="password" bind:value={password} autocomplete="new-password" required class="input w-full">
           </div>
         </div>
 
         <div>
-          <label for="password2" class="block text-sm font-medium text-gray-700">
+          <label for="password2">
             Confirm Password
           </label>
           <div class="mt-1">
-            <input id="password2" name="password2" type="password" bind:value={password2} autocomplete="new-password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-3xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input id="password2" name="password2" type="password" bind:value={password2} autocomplete="new-password" required class="input w-full">
           </div>
         </div>
 
         <div>
-          <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-3xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <button type="submit" class="w-full btn btn-primary rounded-3xl my-4">
             Register
           </button>
         </div>
@@ -169,5 +166,6 @@
         </div>
       {/if}
     </div>
-  </div>
+</div>
+
 </div>

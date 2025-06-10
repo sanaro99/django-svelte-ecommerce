@@ -3,7 +3,7 @@
 </script>
 
 <a href={`/products/${product.slug}`} class="card-title link link-hover">
-  <div class="card card-compact bg-base-100 shadow-xl hover:shadow-2xl transition duration-200 rounded-3xl">
+  <div class="card card-compact bg-base-100 shadow-xl hover:shadow-2xl transition duration-200 rounded-3xl w-full">
     {#if product.images?.length}
       <figure><img src={product.images[0].url} alt={product.name} /></figure>
     {/if}
